@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>最終問題</title>
+  <style>
+    body {
+      font-family: "MS Gothic", "Hiragino Sans", sans-serif;
+      text-align: center;
+      margin-top: 60px;
+    }
+    .timer {
+      font-size: 36px;
+      margin-bottom: 20px;
+    }
+    .question {
+      font-size: 22px;
+      margin-bottom: 10px;
+    }
+    .input-box {
+      width: 200px;
+      font-size: 18px;
+      padding: 4px;
+      text-align: center;
+    }
+    button {
+      font-size: 18px;
+      padding: 6px 12px;
+      margin-top: 8px;
+      color: black;
+      border: 2px solid black;
+    }
+    .message-black {
+      font-size: 22px;
+      margin-top: 15px;
+      color: black;
+    }
+
+    .message-yellow {
+      font-size: 22px;
+      margin-top: 15px;
+      color: #FFFF00;
+    }
+
+    .error {
+      color: red;
+      margin-top: 5px;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="timer" class="timer"></div>
+
+  <div class="question">最終問題！これまでの軌跡を振り返って隠された数字を見つけてね。</div>
+  <input id="finalInput" class="input-box" placeholder="数字を入力">
+  <br>
+  <button onclick="checkFinal()">決定</button>
+
+  <div id="msg" class="message"></div>
+  <div id="err" class="error"></div>
+
+  <script>
+  let timerInterval;
+
+  function initTimer() {
+    if (!localStorage.getItem("endTime")) {
+      const end = Date.now() + 20 * 60 * 1000;
+      localStorage.setItem("endTime", end);
+    }
+    updateTimer();
+    timerInterval = setInterval(updateTimer, 1000);
+  }
+
+  function updateTimer() {
+    const endTime = Number(localStorage.getItem("endTime"));
+    const now = Date.now();
+    const remaining = Math.floor((endTime - now) / 1000);
+
+    if (remaining <= 0) {
+      window.location.href = "gameover1.html";
+      return;
+    }
+
+    const m = String(Math.floor(remaining / 60)).padStart(2, "0");
+    const s = String(remaining % 60).padStart(2, "0");
+    document.getElementById("timer").textContent = `${m}:${s}`;
+   }
+
+   initTimer();
+
+   function checkFinal() {
+     const v = document.getElementById("finalInput").value.trim();
+     if (v === "1013") {
+
+       // ★ ここでタイマーを止める
+       clearInterval(timerInterval);
+
+       localStorage.setItem("bombCleared", "true");
+
+       document.getElementById("msg").innerHTML = `
+         <div class="message-black">爆弾解除　おめでとう</div>
+         <div class="message-black">だよねだよね！信じてたよ！ </div>
+         <div class="message-black">…いやまあ解けて当然なんだけどさ、でもよかったー。</div>
+         <div class="message-black">驚かせるようなことしてごめんね？</div>
+         <div class="message-black">また改めて□は送るね～</div>
+         <div class="message-yellow">次はもっと難しくするね！</div>
+     `;
+
+        document.getElementById("err").textContent = "";
+      } else {
+        document.getElementById("msg").textContent = "";
+        document.getElementById("err").textContent = "間違ってるよ";
+      }
+    }
+  </script>
+
+</body>
+</html>
